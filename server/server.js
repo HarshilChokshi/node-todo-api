@@ -63,6 +63,37 @@ app.get('/todos/:id', (req, res) => {
 
 });
 
+app.delete('/todos/:id', (req, res) => {
+  var id = req.params.id;
+
+  if(!ObjectID.isValid(id))
+  {
+    res.status(404).send({
+      errorMessage : 'The id you returned is not a valid id'
+    });
+  }
+  else
+  {
+    Todo.findByIdAndDelete(id).then((doc) => {
+      if(!doc)
+      {
+        res.status(404).send({
+          errorMessage : 'The id you entered does not exist in the database'
+        });
+
+        return;
+      }
+
+      res.send(doc);
+
+    }, (err) => {
+      res.status(400).send({
+        errorMessage : `An error occured while trying to delete a todo item: ${err}`
+      });
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
